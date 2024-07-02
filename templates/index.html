@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>일기장</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <!-- Google Fonts 사용 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu&display=swap" rel="stylesheet">
+
+    <body style="
+    background-image: url('https://i.pinimg.com/564x/ca/f5/76/caf576172c3723cd41320eaa2932bcae.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh; 
+    overflow: hidden;
+    
+">
+    <style>
+        
+        body {
+            font-family: 'Gaegu', cursive;       
+            background-color: #f0f0f0;
+            margin: 20px;
+        }
+
+        #container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            background-size: cover; /* 이미지가 컨테이너에 꽉 차도록 설정 */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-family: 'Gaegu', cursive;
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        .btn-block {
+            margin-top: 15px;
+            font-size: 20px;
+            
+        }
+
+        @media (max-width: 768px) {
+            #container {
+                margin: 0 10px;
+            }
+
+            .btn-block {
+                margin-top: 15px;
+            }
+        }
+        
+    </style>
+</head>
+
+<body>
+
+    <div id="container">
+        <h2>✏️어오기📖</h2>
+
+        <div class="form-group row">
+            <label for="diaryEntry" class="col-sm-4 col-form-label">Today</label>
+            <div class="col-sm-12">
+                <input type="text" id="diaryDate" class="form-control text-center" placeholder="캘린더" />
+            </div>
+        </div>
+
+        <textarea id="diaryEntry" placeholder="오늘은 어떤 하루였나요?" class="form-control"></textarea>
+
+        <div class="row">
+            <div class="col-md-4">
+                <button onclick="saveAndPredict()" class="btn btn-primary btn-block text-white">오늘의 하루 저장</button>
+            </div>
+            <div class="col-md-4">
+                <a href="{{ url_for('diary_list') }}" class="btn btn-info btn-block text-white">일기 목록 보기</a>
+            </div>
+        </div>
+
+        <div id="entries" class="mt-4"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <script>
+         $(document).ready(function () {
+            // 오늘의 날짜를 가져오기
+            var today = new Date();
+            var formattedDate = formatDate(today);
+
+            $('#diaryDate').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                defaultViewDate: { year: today.getFullYear(), month: today.getMonth(), day: today.getDate() }, // 오늘의 날짜로 초기화
+                beforeShowDay: function (date) {
+                    // 일기가 작성된 날짜와 같은 경우 배경색 변경
+                    var entries = document.getElementsByClassName('entry');
+                    for (var i = 0; i < entries.length; i++) {
+                        var entryDate = entries[i].getAttribute('data-date');
+                        if (entryDate === formatDate(date)) {
+                            return {
+                                classes: 'highlighted'
+                            };
+                        }
+                    }
+                    return {};
+                },
+                endDate: formattedDate
+            });
+
+            // 플레이스홀더에 오늘의 날짜 표시
+            $('#diaryDate').val(formattedDate);
+        });
+        function saveAndPredict() {
+    // 일기 내용을 가져옴
+    const entryText = document.getElementById('diaryEntry').value;
+    
+    // 공백 제거 후 비어있는지 확인
+    if (entryText.trim() === "") {
+        alert("일기 내용을 입력하세요.");
+        return;
+    }
+    const entryDate = document.getElementById('diaryDate').value;
+
+    // 모델에 일기 내용을 전달하고 결과를 받아옴
+    fetch('/predict', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            date: new Date(entryDate).toISOString().split('T')[0],
+            text: entryText,
+        }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // 예측 결과를 result 페이지로 전달
+            window.location.href = "{{ url_for('result') }}";
+            document.getElementById('diaryEntry').value = "";
+            
+        } else {
+            alert("일기 저장 및 예측을 수행하는 동안 오류가 발생했습니다.\n에러 메시지: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        alert("서버와 통신하는 동안 오류가 발생했습니다.");
+    });
+}
+
+        // 날짜를 yyyy-mm-dd 형식의 문자열로 변환
+        function formatDate(date) {
+            var year = date.getFullYear();
+            var month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1);
+            var day = (date.getDate() < 10 ? '0' : '') + date.getDate();
+
+            return year + '-' + month + '-' + day;
+        }
+    </script>
+</body>
+
+</html>

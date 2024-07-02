@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- 문서 인코딩 및 뷰포트 설정 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 페이지 제목 설정 -->
+    <title>일기 목록</title>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+            </div>
+        </div>
+    </div> 
+
+    <!-- Bootstrap 및 DatetimePicker 스타일 및 라이브러리 로드 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu&display=swap" rel="stylesheet">
+
+    <body style="
+    background-image: url('https://i.pinimg.com/564x/ca/f5/76/caf576172c3723cd41320eaa2932bcae.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100vh; 
+    margin: 0;
+    ">
+
+    <style>
+        body {
+            font-family: 'Gaegu', cursive;
+            font-size: 22px;
+            background-color: #f8f9fa;
+            color: #495057;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #container {
+            max-width: 570px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 10px auto; /* 10px 뒤 auto 추가 ##################################################*/
+            
+        }
+
+        h4 {
+            font-family: 'Gaegu', cursive;
+            font-size: 40px;
+            color: #007bff;
+            text-align: center;
+        }
+
+        .entry {
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            margin-top: 10px;
+        }
+
+        .datetimepicker {
+            width: 120px;
+        }
+
+        /* 스타일 추가 시작 */
+        .form-group {
+            padding-bottom: 10; /* 기존 margin-bottom 제거 */
+            
+        }
+
+        .col-md-3 {
+            text-align: right; /* 레이블 우측 정렬 */
+            padding-right: 15px; /* 레이블 오른쪽 간격 추가 */
+        }
+
+        .col-md-9 {
+            padding-left: 15px; /* 입력 필드 왼쪽 간격 추가 */
+        }
+        
+        .entries-container {
+        max-height: 470px; /* Set the maximum height for the container */
+        overflow-y: auto; /* Add a vertical scrollbar when content overflows */
+        }
+        
+        .delete-button {
+        float: right; /* Move the delete button to the right */
+        }
+        p {
+            font-family: 'Gaegu', cursive;
+            font-size: 22px;
+            line-height: 0.8;
+        }
+        .col-sm-1{
+            display: flex;
+            
+        }
+        
+    </style>
+</head>
+
+<body>
+
+    <!-- 컨테이너 시작 -->
+    <div id="container">
+        <!-- 일기 목록 제목 -->
+        <h4>일기 목록</h4>
+
+        <!-- datetimepicker 추가 -->
+        <div class="form-group row">
+            <div class="col-7">
+                <input type="text" id="diaryDate" class="form-control text-center datetimepicker" placeholder="날짜 검색" style="width: 150px;" />
+            </div>
+            <div class="col-5 d-flex justify-content-end">
+                <form method="post" action="{{ url_for('write') }}">
+                    <button type="submit" class="btn btn-primary" style="width: 150px;">일기 쓰러가기</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 일기 목록 표시 -->
+        
+        <div class="entries-container">
+        {% for entry in entries %}
+        <div class="entry" data-date="{{ entry.date.strftime('%Y-%m-%d') }}">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>날짜 : {{ entry.date.strftime('%Y-%m-%d') }}</p>
+                </div>
+            </div>
+            <p style="line-height: 1.1;">내용 : {{ entry.text }}</p>   
+            <p style="text-align: center; margin-top: 30px;">{{ entry.analysis_result }}</p>
+            <div style="text-align: center;">
+                <img src="{{ url_for('static', filename=entry.image_path) }}" alt="감정 확률 차트" width="310" height="310">
+            </div>           
+            <!-- 삭제 버튼 추가 -->
+            <div style="text-align: right;">
+                <button class="btn btn-danger" onclick="deleteEntry('{{ entry.id }}')">삭제</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div> 
+    <form action="{{ url_for('logout') }}" method="post">
+        <button type="submit" id="logoutButton" class="btn btn-secondary btn-block text-white" style="width: 100px;">로그아웃</button>
+    </form>  
+    </div>
+    <!-- 컨테이너 종료 -->
+
+    <!-- Bootstrap 및 스크립트 로드 등 -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <script>
+        // 삭제 버튼 클릭 시 실행되는 함수
+        function deleteEntry(entryId) {
+            if (confirm('정말로 이 일기를 삭제하시겠습니까?')) {
+                // 서버에 삭제 요청을 보냄
+                fetch(`/delete_entry/${entryId}`, {
+                    method: 'POST',
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // 삭제 성공 시 페이지 새로고침
+                        location.reload();
+                    } else {
+                        alert("일기를 삭제하는 동안 오류가 발생했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    alert("서버와 통신하는 동안 오류가 발생했습니다.");
+                });
+            }
+        }
+
+        $(document).ready(function () {
+    var datePicker = $('#diaryDate');
+    datePicker.datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        endDate: new Date()
+    });
+
+    datePicker.on('changeDate', function (e) {
+        // 선택된 날짜에 해당하는 일기 엔트리 가져오기
+        var selectedDate = e.format();
+        var entriesForDate = $('.entry[data-date="' + selectedDate + '"]');
+
+        // 모든 엔트리 숨기기
+        $('.entry').hide();
+
+        // 선택된 날짜에 해당하는 일기 엔트리 표시
+        entriesForDate.show();
+        console.log('엔트리의 길이:', entriesForDate.length);
+        // 만약 해당 날짜에 대한 일기가 없으면 메시지 표시
+        if (entriesForDate.length === 0) {
+            alert('선택된 날짜에 일기가 없습니다.');
+            window.location.href = "{{ url_for('diary_list') }}";
+        }
+    });
+});
+      
+    </script>
+
+</body>
+</html>

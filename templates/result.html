@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일기 분석 결과</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu&display=swap" rel="stylesheet">
+
+    <body style="
+    background-image: url('https://i.pinimg.com/564x/ca/f5/76/caf576172c3723cd41320eaa2932bcae.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100vh; 
+    margin: 0;   
+    ">
+    <style>
+        body {
+            font-family: 'Gaegu', cursive;
+            font-size: 22px;
+            background-color: #f8f9fa;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #container {
+            max-width: 370px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+           
+        }
+
+        h2 {
+            font-family: 'Gaegu', cursive;
+            font-size: 40px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        #image-container {
+            margin-bottom: 20px;
+            overflow: hidden; /* 이미지를 부모 요소 내에 꽉 채우기 위해 추가 */
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+           
+        }
+
+        #image-container img {
+            max-width: 320px;
+            max-height: 100%; /* 이미지의 최대 너비를 100%로 설정하여 조절 */
+            border-radius: 8px;
+            transition: transform 0.3s; /* 호버 시 애니메이션 효과를 주기 위해 추가 */
+        }
+
+        #image-container img:hover {
+            transform: scale(1.1); /* 호버 시 약간 확대하는 효과를 주기 위해 추가 */
+        }
+
+        #analysis-result {
+            margin-top: 20px;
+        }
+
+        #analysis-result h2 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        #analysis-result p {
+            font-size: 18px;
+        }
+
+        
+        #analysis-result-prediction {
+        font-size: 18px;
+        margin-top: 20px; /* 예측값 위에 상단 마진 추가 */
+    }
+    p {
+            font-family: 'Gaegu', cursive;
+            font-size: 22px;
+        }
+        .btn-container{
+
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="container">
+        <h2>일기 분석 결과</h2>
+
+        <div id="image-container">
+        <!-- 레이더차트 표시 부분 -->
+        <img src="{{ url_for('static', filename=image_path) }}" alt="감정 확률 차트">
+        </div>
+        <h3>일기를 분석한 감정 결과</h3>
+        <div id="analysis-result-prediction">
+         <p>{{ prediction }}</p>
+        </div>
+        <div class="btn-container">
+            <form action="{{ url_for('chat') }}" method="get">
+                <button type="submit" class="btn btn-primary btn-block mx-auto" style="width: 150px;">컨텐츠 추천받기</button>
+            </form>
+            <form action="{{ url_for('diary_list') }}">
+                <button type="submit" class="btn btn-info btn-block mx-auto" style="width: 150px; margin-top: 10px;">일기 목록 보기</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>

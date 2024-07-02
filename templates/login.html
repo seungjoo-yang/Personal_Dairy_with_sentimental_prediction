@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>로그인 해주세요.</title>
+       
+    <!-- Bootstrap CSS를 불러옴 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+<body style="
+    background-image: url('https://i.pinimg.com/564x/ca/f5/76/caf576172c3723cd41320eaa2932bcae.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh; 
+    overflow: hidden;
+    ">
+
+    <!-- Google Fonts 사용 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Gaegu', cursive;
+        }
+
+        /* 다른 요소에도 폰트를 적용할 수 있습니다 */
+        h1 {
+            font-family: 'Gaegu', cursive;
+        }
+
+        p {
+            font-family: 'Gaegu', cursive;
+        }
+    </style>
+      
+<!-- Bootstrap 및 Popper.js, jQuery 스크립트 추가 -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+    <!-- 컨테이너 시작 -->
+    <div class="container mt-5">
+        <!-- 로우 시작 및 가운데 정렬 -->
+        <div class="row justify-content-center">
+            <!-- 칼럼 설정 -->
+            <div class="col-md-6">
+                <!-- 카드 시작 -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- 로그인 제목 -->
+                        <h2 class="card-title text-center">어제보다 나은 </p>오늘을 위한 기록 📝</h2>
+                        
+                        <!-- 플래시 메시지 표시 -->
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                <!-- 알림 메시지 표시 -->
+                                <div class="alert alert-{{ messages[0].split(' ')[0] }} alert-dismissible fade show" role="alert">
+                                    {{ messages[0] }}
+                                    <!-- 알림 닫기 버튼 -->
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+
+                        <!-- 로그인 폼 시작 -->
+                        <form method="post" action="{{ url_for('login') }}">
+                            <!-- 사용자명 입력 필드 -->
+                            <div class="form-group">
+                                <label for="username">사용자명(ID)</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+
+                            <!-- 비밀번호 입력 필드 -->
+                            <div class="form-group">
+                                <label for="password">비밀번호(Password)</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+
+                            <!-- 로그인 버튼 -->
+                            <button type="submit" class="btn btn-primary btn-block">로그인(login)</button>
+                        </form>
+                        
+                            
+                        <!-- 로그인 폼 종료 -->
+
+                        <!-- 회원가입 링크 및 안내 메시지 -->
+                        <p class="mt-3 text-center">
+                            계정이 없으신가요? <a href="{{ url_for('register') }}">회원가입(Sign up)</a>
+                        </p>
+                    </div>
+                </div>
+                <!-- 카드 종료 -->
+            </div>
+        </div>
+        <!-- 로우 종료 및 컨테이너 종료 -->
+    </div>
+
+</body>
+</html>
